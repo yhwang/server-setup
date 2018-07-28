@@ -1,0 +1,14 @@
+{
+  "servers": {
+    "server1": {
+      "ip": "9.9.9.9",
+      "username": "root",
+      "password": "my password"
+    }
+  },
+  "users": [ "user1" ],
+  "keys": {
+    "pub": "./user-key.pub",
+    "priv": "./user-key"
+  }
+}
