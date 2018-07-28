@@ -87,7 +87,7 @@ async function setup(config) {
     let server = new PerfServer(
       settings.ip, settings.username, settings.password);
     await server.connect();
-    await server.installPackage(['xfsprogs', 'xfsdump']);
+    await server.installPackage(config.packages);
     await server.uploadFile(config.keys.pub, '/root/perf-key.pub')
     await server.uploadFile(config.keys.priv, '/root/perf-key')
     for (let index = 0, length = config.users.length; index < length; index++) {

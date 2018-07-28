@@ -6,6 +6,7 @@
       "password": "my password"
     }
   },
+  "packages": ["xfsprogs", "xfsdump"],
   "users": [ "user1" ],
   "keys": {
     "pub": "./user-key.pub",
