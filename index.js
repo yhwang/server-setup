@@ -25,6 +25,10 @@ class PerfServer {
   }
 
   async installPackage(packages) {
+    if (packages === null || !Array.isArray(packages)
+      || packages.length === 0) {
+      return;
+    }
     await this.ssh.execCommand(`apt update; apt install -y ${packages.join(' ')}`)
       .then( result => {
         console.log(`STDOUT: ${result.stdout}`);
@@ -88,14 +92,23 @@ async function setup(config) {
       settings.ip, settings.username, settings.password);
     await server.connect();
     await server.installPackage(config.packages);
-    await server.uploadFile(config.keys.pub, '/root/perf-key.pub')
-    await server.uploadFile(config.keys.priv, '/root/perf-key')
     for (let index = 0, length = config.users.length; index < length; index++) {
-      let user = config.users[index];
-      await server.addUser(user);
-      await server.addKeys('/root/perf-key.pub', user);
-      await server.copyKeyAsUserKey('/root/perf-key', '/root/perf-key.pub', user);
-      await server.exec(`echo "${user}  ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers`);
+      let userInfo = config.users[index];
+      await server.addUser(userInfo.name);
+      if (userInfo['pub-key']) {
+        await server.uploadFile(userInfo['pub-key'], '/root/tmp-key.pub')
+        await server.addKeys('/root/tmp-key.pub', userInfo.name);
+      }
+      if (userInfo['priv-key']) {
+        await server.uploadFile(userInfo['priv-key'], '/root/tmp-key')
+      }
+      if (userInfo['pub-key'] && userInfo['priv-key']) {
+        await server.copyKeyAsUserKey('/root/tmp-key', '/root/tmp-key.pub', userInfo.name);
+      }
+      if (userInfo.sudoer && userInfo.sudoer === true) {
+        await server.exec(`echo "${userInfo.name}  ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers`);
+      }
+      await server.exec(`rm -f /root/tmp-key.pub && rm -f /rot/tmp-key`);
     };
     await server.disconnect();
   }

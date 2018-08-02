@@ -1,15 +1,16 @@
 {
   "servers": {
-    "server1": {
-      "ip": "9.9.9.9",
+    "myserver1": {
+      "ip": "1.1.1.1",
       "username": "root",
-      "password": "my password"
+      "password": "xxxxxxx"
     }
   },
-  "packages": ["xfsprogs", "xfsdump"],
-  "users": [ "user1" ],
-  "keys": {
-    "pub": "./user-key.pub",
-    "priv": "./user-key"
-  }
+  "packages": ["package1", "package2"],
+  "users": [{
+    "name": "user1",
+    "pub-key": "./key.pub",
+    "priv-key": "./key",
+    "sudoer": true
+  }]
 }
